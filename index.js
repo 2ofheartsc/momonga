@@ -61,14 +61,14 @@ const commands = [
     new SlashCommandBuilder()
         .setName('setbirthday')
         .setDescription('Set a birthday for a user (MM/DD format).')
-        .addUserOption(option =>
-            option.setName('user')
-                .setDescription('User to set birthday for (default to yourself)')
-                .setRequired(false))
         .addStringOption(option =>
             option.setName('date')
                 .setDescription('Birthday (MM/DD)')
-                .setRequired(true)),
+                .setRequired(true))
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('User to set birthday for (default to yourself)')
+                .setRequired(false)),
     new SlashCommandBuilder()
         .setName('editbirthday')
         .setDescription('Edit an existing birthday for a user.')
