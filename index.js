@@ -85,7 +85,11 @@ const commands = [
         .setDescription('List all stored birthdays.'),
     new SlashCommandBuilder()
         .setName('deletecommands')
-        .setDescription('Delete all slash commands (use with caution).'),
+        .setDescription('Delete a specific slash command')
+        .addStringOption(option =>
+            option.setName('command')
+                .setDescription('Command name to delete')
+                .setRequired(true)),
     new SlashCommandBuilder()
         .setName('roles')
         .setDescription('Get role assignment menus for Pronouns, Age, Pings, and DM status.')
@@ -167,8 +171,16 @@ client.on('interactionCreate', async interaction => {
         return interaction.reply({ embeds: [embed] });
     }
     else if (commandName === 'deletecommands') {
-        await client.application.commands.set([]);
-        return interaction.reply('All slash commands have been deleted.');
+        const commandToDelete = interaction.options.getString('command');
+        const commands = await client.application.commands.fetch();
+        const command = commands.find(cmd => cmd.name === commandToDelete);
+        
+        if (!command) {
+            return interaction.reply({ content: `Command "${commandToDelete}" not found.`, ephemeral: true });
+        }
+
+        await client.application.commands.delete(command.id);
+        return interaction.reply({ content: `Command "${commandToDelete}" has been deleted.`, ephemeral: true });
     }
     else if (commandName === 'roles') {
         const pronounRoles = {
