@@ -1,3 +1,4 @@
+
 // Import necessary classes from discord.js
 const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const fs = require('fs');
@@ -15,8 +16,8 @@ const MOD_ROLE_ID = '1235976846718402560';
 
 // Channel IDs
 const BIRTHDAY_CHANNEL_ID = '1226880047198113843';
-const WELCOME_CHANNEL_ID = '1236679858332106782';
-const GOODBYE_CHANNEL_ID = '1236686717294219275';
+const WELCOME_CHANNEL_ID = '1226880047198113843'; // Update this with your welcome channel ID
+const GOODBYE_CHANNEL_ID = '1226880047198113843'; // Update this with your goodbye channel ID
 
 // File to store birthdays
 const BIRTHDAYS_FILE = 'birthdays.json';
@@ -47,7 +48,6 @@ function saveBirthdays() {
 
 // Validate MM/DD format
 function isValidDate(input) {
-    // Regex for MM/DD, 1 or 2 digits for month/day
     const regex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])$/;
     if (!regex.test(input)) return false;
     const [month, day] = input.split('/').map(Number);
@@ -56,7 +56,7 @@ function isValidDate(input) {
     return true;
 }
 
-// Create slash commands using SlashCommandBuilder
+// Create slash commands
 const commands = [
     new SlashCommandBuilder()
         .setName('setbirthday')
@@ -94,15 +94,12 @@ const commands = [
 // When bot is ready
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
-    // Register slash commands globally
     await client.application.commands.set(commands);
-
-    // Check birthdays now and then every 24h
     checkBirthdays();
     setInterval(checkBirthdays, 24 * 60 * 60 * 1000);
 });
 
-// Function to check birthdays and send birthday message
+// Function to check birthdays
 async function checkBirthdays() {
     const today = new Date();
     const mm = today.getMonth() + 1;
@@ -124,11 +121,10 @@ async function checkBirthdays() {
     }
 }
 
-// Handle slash command interactions
+// Handle slash commands
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    // Restrict to mods
     if (!interaction.member.roles.cache.has(MOD_ROLE_ID)) {
         return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
     }
@@ -169,31 +165,31 @@ client.on('interactionCreate', async interaction => {
             embed.addFields({ name: `<@${userId}>`, value: birthday, inline: true });
         }
         return interaction.reply({ embeds: [embed] });
-    } 
+    }
     else if (commandName === 'deletecommands') {
         await client.application.commands.set([]);
         return interaction.reply('All slash commands have been deleted.');
-    } 
+    }
     else if (commandName === 'roles') {
-        // Define role IDs for each option (replace with your actual role IDs)
         const pronounRoles = {
-            he_him: 'ROLE_ID_HE_HIM',
-            she_her: 'ROLE_ID_SHE_HER',
-            they_them: 'ROLE_ID_THEY_THEM'
+            'she/her': '1243103055956803645',
+            'he/him': '1243103190258286624',
+            'they/them': '1243103426070446091',
+            'other': '1243103632493117522'
         };
         const ageRoles = {
-            '13-17': 'ROLE_ID_13_17',
-            '18-24': 'ROLE_ID_18_24',
-            '25+': 'ROLE_ID_25_PLUS'
+            '-17': '1243117148449275915',
+            '18+': '1243117205516849173'
         };
         const pingRoles = {
-            events: 'ROLE_ID_EVENTS',
-            announcements: 'ROLE_ID_ANNOUNCEMENTS',
-            off: 'ROLE_ID_PINGS_OFF'
+            'shame': '1243179816115638302',
+            'announcements': '1243683983733297182',
+            'games': '1243683801369018368'
         };
         const dmRoles = {
-            open: 'ROLE_ID_DM_OPEN',
-            closed: 'ROLE_ID_DM_CLOSED'
+            'ask': '1243683324128395297',
+            'open': '1243683467762470984',
+            'closed': '1243683499748233238'
         };
 
         // Pronouns menu
@@ -201,9 +197,10 @@ client.on('interactionCreate', async interaction => {
             .setCustomId('pronouns_select')
             .setPlaceholder('Choose your pronouns')
             .addOptions([
-                { label: 'He/Him', description: 'Assign yourself He/Him role', value: 'he_him' },
-                { label: 'She/Her', description: 'Assign yourself She/Her role', value: 'she_her' },
-                { label: 'They/Them', description: 'Assign yourself They/Them role', value: 'they_them' }
+                { label: 'She/Her', value: 'she/her' },
+                { label: 'He/Him', value: 'he/him' },
+                { label: 'They/Them', value: 'they/them' },
+                { label: 'Other', value: 'other' }
             ]);
         const pronounRow = new ActionRowBuilder().addComponents(pronounSelect);
         const pronounEmbed = new EmbedBuilder()
@@ -216,9 +213,8 @@ client.on('interactionCreate', async interaction => {
             .setCustomId('age_select')
             .setPlaceholder('Select your age range')
             .addOptions([
-                { label: '13-17', description: 'Assign age 13-17 role', value: '13-17' },
-                { label: '18-24', description: 'Assign age 18-24 role', value: '18-24' },
-                { label: '25+', description: 'Assign age 25+ role', value: '25+' }
+                { label: '-17', value: '-17' },
+                { label: '18+', value: '18+' }
             ]);
         const ageRow = new ActionRowBuilder().addComponents(ageSelect);
         const ageEmbed = new EmbedBuilder()
@@ -231,9 +227,9 @@ client.on('interactionCreate', async interaction => {
             .setCustomId('pings_select')
             .setPlaceholder('Select ping notifications')
             .addOptions([
-                { label: 'Events', description: 'Get event pings', value: 'events' },
-                { label: 'Announcements', description: 'Get announcement pings', value: 'announcements' },
-                { label: 'Off', description: 'Disable pings', value: 'off' }
+                { label: 'Shame', value: 'shame' },
+                { label: 'Announcements', value: 'announcements' },
+                { label: 'Games', value: 'games' }
             ]);
         const pingRow = new ActionRowBuilder().addComponents(pingSelect);
         const pingEmbed = new EmbedBuilder()
@@ -246,16 +242,16 @@ client.on('interactionCreate', async interaction => {
             .setCustomId('dm_select')
             .setPlaceholder('Select DM preference')
             .addOptions([
-                { label: 'Open to DMs', description: 'Allow direct messages from members', value: 'open' },
-                { label: 'Closed to DMs', description: 'Do not allow direct messages', value: 'closed' }
+                { label: 'Ask First', value: 'ask' },
+                { label: 'Open to DMs', value: 'open' },
+                { label: 'Closed to DMs', value: 'closed' }
             ]);
         const dmRow = new ActionRowBuilder().addComponents(dmSelect);
         const dmEmbed = new EmbedBuilder()
             .setTitle('Select DM Preference')
-            .setDescription('Choose whether you are open to direct messages.')
+            .setDescription('Choose your DM preference.')
             .setColor(0x00AE86);
 
-        // Send embeds with the corresponding select menus
         await interaction.reply({ embeds: [pronounEmbed], components: [pronounRow] });
         await interaction.followUp({ embeds: [ageEmbed], components: [ageRow] });
         await interaction.followUp({ embeds: [pingEmbed], components: [pingRow] });
@@ -263,77 +259,67 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// Handle select menu interactions for role assignment
+// Handle role selections
 client.on('interactionCreate', async interaction => {
     if (!interaction.isStringSelectMenu()) return;
     const { customId, values, member } = interaction;
     if (!member || member.user.bot) return;
 
-    // Define role mappings (same IDs as above, replace with actual role IDs)
     const pronounRoles = {
-        he_him: 'ROLE_ID_HE_HIM',
-        she_her: 'ROLE_ID_SHE_HER',
-        they_them: 'ROLE_ID_THEY_THEM'
+        'she/her': '1243103055956803645',
+        'he/him': '1243103190258286624',
+        'they/them': '1243103426070446091',
+        'other': '1243103632493117522'
     };
     const ageRoles = {
-        '13-17': 'ROLE_ID_13_17',
-        '18-24': 'ROLE_ID_18_24',
-        '25+': 'ROLE_ID_25_PLUS'
+        '-17': '1243117148449275915',
+        '18+': '1243117205516849173'
     };
     const pingRoles = {
-        events: 'ROLE_ID_EVENTS',
-        announcements: 'ROLE_ID_ANNOUNCEMENTS',
-        off: 'ROLE_ID_PINGS_OFF'
+        'shame': '1243179816115638302',
+        'announcements': '1243683983733297182',
+        'games': '1243683801369018368'
     };
     const dmRoles = {
-        open: 'ROLE_ID_DM_OPEN',
-        closed: 'ROLE_ID_DM_CLOSED'
+        'ask': '1243683324128395297',
+        'open': '1243683467762470984',
+        'closed': '1243683499748233238'
     };
 
-    if (customId === 'pronouns_select') {
-        // Remove all pronoun roles then add the new one
-        for (const roleId of Object.values(pronounRoles)) {
+    const handleRoleUpdate = async (roles, selectedValue) => {
+        for (const roleId of Object.values(roles)) {
             if (member.roles.cache.has(roleId)) {
                 await member.roles.remove(roleId);
             }
         }
-        const selectedRoleId = pronounRoles[values[0]];
+        const selectedRoleId = roles[selectedValue];
         if (selectedRoleId) await member.roles.add(selectedRoleId);
-        return interaction.reply({ content: 'Pronoun role updated.', ephemeral: true });
-    } 
-    else if (customId === 'age_select') {
-        for (const roleId of Object.values(ageRoles)) {
-            if (member.roles.cache.has(roleId)) {
-                await member.roles.remove(roleId);
-            }
+    };
+
+    try {
+        if (customId === 'pronouns_select') {
+            await handleRoleUpdate(pronounRoles, values[0]);
+            return interaction.reply({ content: 'Pronoun role updated.', ephemeral: true });
+        } 
+        else if (customId === 'age_select') {
+            await handleRoleUpdate(ageRoles, values[0]);
+            return interaction.reply({ content: 'Age role updated.', ephemeral: true });
         }
-        const selectedAgeRoleId = ageRoles[values[0]];
-        if (selectedAgeRoleId) await member.roles.add(selectedAgeRoleId);
-        return interaction.reply({ content: 'Age role updated.', ephemeral: true });
-    } 
-    else if (customId === 'pings_select') {
-        for (const roleId of Object.values(pingRoles)) {
-            if (member.roles.cache.has(roleId)) {
-                await member.roles.remove(roleId);
-            }
+        else if (customId === 'pings_select') {
+            await handleRoleUpdate(pingRoles, values[0]);
+            return interaction.reply({ content: 'Ping role updated.', ephemeral: true });
         }
-        const selectedPingRoleId = pingRoles[values[0]];
-        if (selectedPingRoleId) await member.roles.add(selectedPingRoleId);
-        return interaction.reply({ content: 'Ping roles updated.', ephemeral: true });
-    } 
-    else if (customId === 'dm_select') {
-        for (const roleId of Object.values(dmRoles)) {
-            if (member.roles.cache.has(roleId)) {
-                await member.roles.remove(roleId);
-            }
+        else if (customId === 'dm_select') {
+            await handleRoleUpdate(dmRoles, values[0]);
+            return interaction.reply({ content: 'DM preference updated.', ephemeral: true });
         }
-        const selectedDmRoleId = dmRoles[values[0]];
-        if (selectedDmRoleId) await member.roles.add(selectedDmRoleId);
-        return interaction.reply({ content: 'DM preference updated.', ephemeral: true });
+    } catch (error) {
+        console.error('Error updating roles:', error);
+        return interaction.reply({ content: 'There was an error updating your roles.', ephemeral: true });
     }
 });
 
-// Welcome new members
+// Welcome message
 client.on('guildMemberAdd', member => {
     const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
     if (!channel) return;
@@ -345,7 +331,7 @@ client.on('guildMemberAdd', member => {
     channel.send({ embeds: [welcomeEmbed] });
 });
 
-// Goodbye members
+// Goodbye message
 client.on('guildMemberRemove', member => {
     const channel = member.guild.channels.cache.get(GOODBYE_CHANNEL_ID);
     if (!channel) return;
@@ -357,5 +343,5 @@ client.on('guildMemberRemove', member => {
     channel.send({ embeds: [goodbyeEmbed] });
 });
 
-// Log in to Discord with your client's token
+// Login to Discord
 client.login(process.env.DISCORD_TOKEN);
