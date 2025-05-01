@@ -410,4 +410,4 @@ client.on('guildMemberRemove', member => {
 });
 
 // Login to Discord
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.token);
