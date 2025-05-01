@@ -193,7 +193,28 @@ client.on('interactionCreate', async interaction => {
         await client.application.commands.delete(command.id);
         return interaction.reply({ content: `Command "${commandToDelete}" has been deleted.`, ephemeral: true });
     }
-    else if (commandName === 'roles') {
+    else if (commandName === 'allbirthdays') {
+        if (Object.keys(birthdays).length === 0) {
+            return interaction.reply('No birthdays have been set yet.');
+        }
+        const embed = new EmbedBuilder()
+            .setTitle('All Birthdays')
+            .setColor(0x00AE86);
+            
+        for (const [userId, birthday] of Object.entries(birthdays)) {
+            const member = await interaction.guild.members.fetch(userId);
+            const username = member ? member.user.username : 'Unknown User';
+            embed.addFields({ name: username, value: birthday, inline: true });
+        }
+        return interaction.reply({ embeds: [embed] });
+    }
+}); 
+
+// Message command handler
+client.on('messageCreate', async message => {
+    if (message.author.bot) return;
+
+    if (message.content === '!roles') {
         const pronounRoles = {
             'she/her': '1243103055956803645',
             'he/him': '1243103190258286624',
@@ -275,10 +296,10 @@ client.on('interactionCreate', async interaction => {
             .setDescription('Choose your DM preference.')
             .setColor(0x00AE86);
 
-        await interaction.reply({ embeds: [pronounEmbed], components: [pronounRow] });
-        await interaction.followUp({ embeds: [ageEmbed], components: [ageRow] });
-        await interaction.followUp({ embeds: [pingEmbed], components: [pingRow] });
-        await interaction.followUp({ embeds: [dmEmbed], components: [dmRow] });
+        await message.channel.send({ embeds: [pronounEmbed], components: [pronounRow] });
+        await message.channel.send({ embeds: [ageEmbed], components: [ageRow] });
+        await message.channel.send({ embeds: [pingEmbed], components: [pingRow] });
+        await message.channel.send({ embeds: [dmEmbed], components: [dmRow] });
     }
 });
 
@@ -343,6 +364,28 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Welcome message
+// Rules command
+client.on('messageCreate', async message => {
+    if (message.author.bot) return;
+    
+    if (message.content === '!rules') {
+        const rulesEmbed = new EmbedBuilder()
+            .setTitle('Server Rules')
+            .setColor(0x00AE86)
+            .setDescription('Please follow these rules to maintain a friendly environment:')
+            .addFields(
+                { name: '1. Be Respectful', value: 'Treat all members with respect and kindness.' },
+                { name: '2. No Spam', value: 'Avoid spamming messages, emotes, or media.' },
+                { name: '3. No NSFW Content', value: 'Keep all content family-friendly.' },
+                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' }
+            )
+            .setImage('https://example.com/rules-image.png') // Replace with your image URL
+            .setTimestamp();
+            
+        message.channel.send({ embeds: [rulesEmbed] });
+    }
+});
+
 client.on('guildMemberAdd', member => {
     const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
     if (!channel) return;
