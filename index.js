@@ -401,5 +401,20 @@ client.on('guildMemberRemove', member => {
     channel.send({ embeds: [goodbyeEmbed] });
 });
 
-// Login to Discord
-client.login(process.env.token);
+// Login to Discord with error handling
+client.login(process.env.token).catch(error => {
+    console.error('Failed to login to Discord:', error);
+});
+
+// Add error event handler
+client.on('error', error => {
+    console.error('Discord client error:', error);
+});
+
+client.on('disconnect', () => {
+    console.log('Bot disconnected from Discord!');
+});
+
+client.on('reconnecting', () => {
+    console.log('Bot reconnecting to Discord...');
+});
