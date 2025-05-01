@@ -1,3 +1,14 @@
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Bot is running!');
+});
+
+app.listen(3000, () => {
+  console.log('Express server started');
+});
+
 
 // Import necessary classes from discord.js
 const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
@@ -16,8 +27,8 @@ const MOD_ROLE_ID = '1235976846718402560';
 
 // Channel IDs
 const BIRTHDAY_CHANNEL_ID = '1226880047198113843';
-const WELCOME_CHANNEL_ID = '1226880047198113843'; // Update this with your welcome channel ID
-const GOODBYE_CHANNEL_ID = '1226880047198113843'; // Update this with your goodbye channel ID
+const WELCOME_CHANNEL_ID = '1236679858332106782'; // Update this with your welcome channel ID
+const GOODBYE_CHANNEL_ID = '1236686717294219275'; // Update this with your goodbye channel ID
 
 // File to store birthdays
 const BIRTHDAYS_FILE = 'birthdays.json';
