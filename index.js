@@ -417,4 +417,6 @@ client.on('disconnect', () => {
 
 client.on('reconnecting', () => {
     console.log('Bot reconnecting to Discord...');
+
+    client.login('YOUR_BOT_TOKEN');
 });
