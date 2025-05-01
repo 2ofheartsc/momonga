@@ -18,9 +18,7 @@ const fs = require('fs');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.GuildMembers
     ]
 });
 
@@ -171,7 +169,18 @@ client.on('interactionCreate', async interaction => {
         saveBirthdays();
         return interaction.reply({ content: `Birthday for <@${user.id}> updated to ${date}.` });
     } 
-    
+    else if (commandName === 'allbirthdays') {
+        if (Object.keys(birthdays).length === 0) {
+            return interaction.reply('No birthdays have been set yet.');
+        }
+        const embed = new EmbedBuilder()
+            .setTitle('All Birthdays')
+            .setColor(0x00AE86);
+        for (const [userId, birthday] of Object.entries(birthdays)) {
+            embed.addFields({ name: `<@${userId}>`, value: birthday, inline: true });
+        }
+        return interaction.reply({ embeds: [embed] });
+    }
     else if (commandName === 'deletecommands') {
         const commandToDelete = interaction.options.getString('command');
         const commands = await client.application.commands.fetch();
@@ -362,16 +371,15 @@ client.on('messageCreate', async message => {
     if (message.content === '!rules') {
         const rulesEmbed = new EmbedBuilder()
             .setTitle('Server Rules')
-            .setColor(0xec635d)
+            .setColor(0x00AE86)
             .setDescription('Please follow these rules to maintain a friendly environment:')
             .addFields(
                 { name: '1. Be Respectful', value: 'Treat all members with respect and kindness.' },
-                { name: '2. No Slurs', value: ' No discrimination, slurs or hate speech.' },
-                { name: '3. No NSFW Content', value: 'Keep all content family-friendly, this includes gore.' },
-                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' },
-                { name: '5. No Insensitive Jokes', value: 'no rape, touching, or etc. jokes' }
+                { name: '2. No Spam', value: 'Avoid spamming messages, emotes, or media.' },
+                { name: '3. No NSFW Content', value: 'Keep all content family-friendly.' },
+                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' }
             )
-            .setImage('https://i.ibb.co/QSmLh9k/2025-05-01-0t0-Kleki-1.png') // Replace with your image URL
+            .setImage('https://example.com/rules-image.png') // Replace with your image URL
             .setTimestamp();
             
         message.channel.send({ embeds: [rulesEmbed] });
@@ -401,20 +409,5 @@ client.on('guildMemberRemove', member => {
     channel.send({ embeds: [goodbyeEmbed] });
 });
 
-// Login to Discord with error handling
-client.login(process.env.token).catch(error => {
-    console.error('Failed to login to Discord:', error);
-});
-
-// Add error event handler
-client.on('error', error => {
-    console.error('Discord client error:', error);
-});
-
-client.on('disconnect', () => {
-    console.log('Bot disconnected from Discord!');
-});
-
-client.on('reconnecting', () => {
-    console.log('Bot reconnecting to Discord...');
-});
+// Login to Discord
+client.login(process.env.DISCORD_TOKEN);
