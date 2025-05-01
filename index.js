@@ -362,15 +362,16 @@ client.on('messageCreate', async message => {
     if (message.content === '!rules') {
         const rulesEmbed = new EmbedBuilder()
             .setTitle('Server Rules')
-            .setColor(0x00AE86)
+            .setColor(0xec635d)
             .setDescription('Please follow these rules to maintain a friendly environment:')
             .addFields(
                 { name: '1. Be Respectful', value: 'Treat all members with respect and kindness.' },
-                { name: '2. No Spam', value: 'Avoid spamming messages, emotes, or media.' },
-                { name: '3. No NSFW Content', value: 'Keep all content family-friendly.' },
-                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' }
+                { name: '2. No Slurs', value: ' No discrimination, slurs or hate speech.' },
+                { name: '3. No NSFW Content', value: 'Keep all content family-friendly, this includes gore.' },
+                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' },
+                { name: '5. No Insensitive Jokes', value: 'no rape, touching, or etc. jokes' }
             )
-            .setImage('https://example.com/rules-image.png') // Replace with your image URL
+            .setImage('https://i.ibb.co/QSmLh9k/2025-05-01-0t0-Kleki-1.png') // Replace with your image URL
             .setTimestamp();
             
         message.channel.send({ embeds: [rulesEmbed] });
