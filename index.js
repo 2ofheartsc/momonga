@@ -18,7 +18,9 @@ const fs = require('fs');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
     ]
 });
 
@@ -169,18 +171,7 @@ client.on('interactionCreate', async interaction => {
         saveBirthdays();
         return interaction.reply({ content: `Birthday for <@${user.id}> updated to ${date}.` });
     } 
-    else if (commandName === 'allbirthdays') {
-        if (Object.keys(birthdays).length === 0) {
-            return interaction.reply('No birthdays have been set yet.');
-        }
-        const embed = new EmbedBuilder()
-            .setTitle('All Birthdays')
-            .setColor(0x00AE86);
-        for (const [userId, birthday] of Object.entries(birthdays)) {
-            embed.addFields({ name: `<@${userId}>`, value: birthday, inline: true });
-        }
-        return interaction.reply({ embeds: [embed] });
-    }
+    
     else if (commandName === 'deletecommands') {
         const commandToDelete = interaction.options.getString('command');
         const commands = await client.application.commands.fetch();
@@ -410,4 +401,4 @@ client.on('guildMemberRemove', member => {
 });
 
 // Login to Discord
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.token);
