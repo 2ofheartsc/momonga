@@ -113,7 +113,13 @@ client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
     await client.application.commands.set(commands);
     checkBirthdays();
-    setInterval(checkBirthdays, 24 * 60 * 60 * 1000);
+    // Check birthdays at midnight each day
+    setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
+            checkBirthdays();
+        }
+    }, 60 * 1000); // Check every minute
 });
 
 // Function to check birthdays
