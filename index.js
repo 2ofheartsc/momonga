@@ -395,7 +395,7 @@ client.on('guildMemberAdd', member => {
         .setTitle('Welcome!')
         .setDescription(`Welcome to the server, <@${member.id}>!`)
         .setImage('https://i.ibb.co/LhPMG51v/image-2.png')
-        .setColor(0x00AE86)
+        .setColor(0xffffff)
         .setTimestamp();
     channel.send({ embeds: [welcomeEmbed] });
 });
@@ -407,7 +407,8 @@ client.on('guildMemberRemove', member => {
     const goodbyeEmbed = new EmbedBuilder()
         .setTitle('Goodbye!')
         .setDescription(`${member.user.tag} has left the server.`)
-        .setColor(0xFF0000)
+        .setImage('https://i.ibb.co/kg4SvLfn/image-3.png')
+        .setColor(0xffffff)
         .setTimestamp();
     channel.send({ embeds: [goodbyeEmbed] });
 });
