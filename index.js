@@ -250,9 +250,9 @@ client.on('messageCreate', async message => {
             ]);
         const pronounRow = new ActionRowBuilder().addComponents(pronounSelect);
         const pronounEmbed = new EmbedBuilder()
-            .setTitle('Select Pronouns')
-            .setDescription('Choose your pronouns from the menu below.')
-            .setColor(0x00AE86);
+            .setTitle('**Pronouns -֯⠀ ͚֯  𝅘ྀི𝅥**')
+            .setDescription('Choose your pronouns.  ')
+            .setColor(0xffffff);
 
         // Age menu
         const ageSelect = new StringSelectMenuBuilder()
@@ -264,9 +264,9 @@ client.on('messageCreate', async message => {
             ]);
         const ageRow = new ActionRowBuilder().addComponents(ageSelect);
         const ageEmbed = new EmbedBuilder()
-            .setTitle('Select Age Range')
-            .setDescription('Choose your age range from the menu below.')
-            .setColor(0x00AE86);
+            .setTitle('**Age Range 𑇓𝆬   ͙࿐𓈒ْ **')
+            .setDescription('Choose your age range.  ')
+            .setColor(0xffffff);
 
         // Pings menu
         const pingSelect = new StringSelectMenuBuilder()
@@ -279,9 +279,9 @@ client.on('messageCreate', async message => {
             ]);
         const pingRow = new ActionRowBuilder().addComponents(pingSelect);
         const pingEmbed = new EmbedBuilder()
-            .setTitle('Select Pings')
-            .setDescription('Choose which pings you want to receive.')
-            .setColor(0x00AE86);
+            .setTitle('**Pings *˚⁺‧͙˚◌**')
+            .setDescription('Choose recieved ping.  ')
+            .setColor(0xffffff);
 
         // DM Status menu
         const dmSelect = new StringSelectMenuBuilder()
@@ -294,9 +294,9 @@ client.on('messageCreate', async message => {
             ]);
         const dmRow = new ActionRowBuilder().addComponents(dmSelect);
         const dmEmbed = new EmbedBuilder()
-            .setTitle('Select DM Preference')
-            .setDescription('Choose your DM preference.')
-            .setColor(0x00AE86);
+            .setTitle('**DM Status  ೃ❀𓈒**')
+            .setDescription('Choose your DM status.')
+            .setColor(0xffffff);
 
         await message.channel.send({ embeds: [pronounEmbed], components: [pronounRow] });
         await message.channel.send({ embeds: [ageEmbed], components: [ageRow] });
@@ -373,16 +373,16 @@ client.on('messageCreate', async message => {
     if (message.content === '!rules') {
         const rulesEmbed = new EmbedBuilder()
             .setTitle('Server Rules')
-            .setColor(0x00AE86)
+            .setColor(0xffffff)
             .setDescription('Please follow these rules to maintain a friendly environment:')
             .addFields(
                 { name: '1. Be Respectful', value: 'Treat all members with respect and kindness.' },
-                { name: '2. No Spam', value: 'Avoid spamming messages, emotes, or media.' },
-                { name: '3. No NSFW Content', value: 'Keep all content family-friendly.' },
-                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' }
+                { name: '2. No Slurs', value: ' No discrimination, slurs or hate speech.' },
+                { name: '3. No NSFW Content', value: 'Keep all content family-friendly, this includes gore.' },
+                { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' },
+                { name: '5. No Insensitive Jokes', value: 'No rape, touching, or etc. jokes.' }
             )
-            .setImage('https://example.com/rules-image.png') // Replace with your image URL
-            .setTimestamp();
+            .setImage('https://i.ibb.co/ccPgdM2K/2025-05-02-0qy-Kleki-1.png') // Replace with your image URL
             
         message.channel.send({ embeds: [rulesEmbed] });
     }
@@ -393,7 +393,8 @@ client.on('guildMemberAdd', member => {
     if (!channel) return;
     const welcomeEmbed = new EmbedBuilder()
         .setTitle('Welcome!')
-        .setDescription(`Welcome to the server, <@${member.id}>!`)
+        .setDescription(`Welcome to the server, <@${member.id}>!`
+                       .setImage('https://i.ibb.co/LhPMG51v/image-2.png'))
         .setColor(0x00AE86)
         .setTimestamp();
     channel.send({ embeds: [welcomeEmbed] });
