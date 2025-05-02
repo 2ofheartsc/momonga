@@ -393,8 +393,8 @@ client.on('guildMemberAdd', member => {
     if (!channel) return;
     const welcomeEmbed = new EmbedBuilder()
         .setTitle('Welcome!')
-        .setDescription(`Welcome to the server, <@${member.id}>!`
-                       .setImage('https://i.ibb.co/LhPMG51v/image-2.png'))
+        .setDescription(`Welcome to the server, <@${member.id}>!`)
+        .setImage('https://i.ibb.co/LhPMG51v/image-2.png')
         .setColor(0x00AE86)
         .setTimestamp();
     channel.send({ embeds: [welcomeEmbed] });
