@@ -150,9 +150,16 @@ async function checkBirthdays() {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    if (!interaction.member.roles.cache.has(MOD_ROLE_ID)) {
+    const { commandName } = interaction;  // You need to define commandName here
+
+    const restrictedCommands = ['roles', 'deletecommands'];
+
+    if (restrictedCommands.includes(commandName) && !interaction.member.roles.cache.has(MOD_ROLE_ID)) {
         return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
     }
+
+    // Your command handling logic goes here
+});
 
     const { commandName } = interaction;
 
