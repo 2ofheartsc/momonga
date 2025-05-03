@@ -153,29 +153,133 @@ client.on('interactionCreate', async interaction => {
 
     const { commandName } = interaction;
 
-    if (commandName === 'setbirthday') {
-        const user = interaction.options.getUser('user') || interaction.user;
-        const date = interaction.options.getString('date');
-        if (!isValidDate(date)) {
-            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
-        }
-        birthdays[user.id] = date;
-        saveBirthdays();
-        return interaction.reply({ content: `Birthday for <@${user.id}> set to ${date}.` });
-    } 
-    else if (commandName === 'editbirthday') {
-        const user = interaction.options.getUser('user') || interaction.user;
-        const date = interaction.options.getString('date');
-        if (!isValidDate(date)) {
-            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
-        }
-        if (!birthdays[user.id]) {
-            return interaction.reply({ content: `No existing birthday for <@${user.id}>. Use /setbirthday first.`, flags: 64 });
-        }
-        birthdays[user.id] = date;
-        saveBirthdays();
-        return interaction.reply({ content: `Birthday for <@${user.id}> updated to ${date}.` });
-    } 
+ const { SlashCommandBuilder } = require('@discordjs/builders');
+const axios = require('axios');
+
+// Your JSONBin URL and API key
+const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
+const BIN_API_KEY = 'your-jsonbin-api-key'; // Replace with your X-Master-Key
+
+// Fetch data from JSONBin
+async function fetchData() {
+  try {
+    const response = await axios.get(BIN_URL, {
+      headers: {
+        'X-Master-Key': BIN_API_KEY,
+      },
+    });
+    return response.data.record; // Return the 'record' object from JSONBin
+  } catch (error) {
+    console.error('Error fetching data:', error.response ? error.response.data : error.message);
+    throw error; // Throw the error to be caught in the command handler
+  }
+}
+
+// Update data to JSONBin
+async function updateData(newData) {
+  try {
+    const response = await axios.put(
+      BIN_URL,
+      { record: newData },
+      {
+        headers: {
+          'X-Master-Key': BIN_API_KEY,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('JSONBin updated:', response.data);
+  } catch (error) {
+    console.error('Error updating data:', error.response ? error.response.data : error.message);
+    throw error; // Throw the error to be caught in the command handler
+  }
+}
+
+// Example slash commands
+const commands = [
+  new SlashCommandBuilder()
+    .setName('setbirthday')
+    .setDescription('Set a birthday for a user (MM/DD format).')
+    .addStringOption(option =>
+      option.setName('date')
+        .setDescription('Birthday (MM/DD)')
+        .setRequired(true))
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('User to set birthday for (default to yourself)')
+        .setRequired(false)),
+
+  new SlashCommandBuilder()
+    .setName('editbirthday')
+    .setDescription('Edit a birthday for a user (MM/DD format).')
+    .addStringOption(option =>
+      option.setName('date')
+        .setDescription('New birthday (MM/DD)')
+        .setRequired(true))
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('User to edit birthday for (default to yourself)')
+        .setRequired(false)),
+];
+
+async function executeCommand(interaction) {
+  const commandName = interaction.commandName;
+
+  if (commandName === 'setbirthday') {
+    const user = interaction.options.getUser('user') || interaction.user;
+    const date = interaction.options.getString('date');
+
+    if (!isValidDate(date)) {
+      return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
+    }
+
+    try {
+      // Fetch existing data from JSONBin
+      const birthdays = await fetchData(); 
+      // Set the birthday for the user
+      birthdays[user.id] = date; 
+
+      // Update the data to JSONBin
+      await updateData(birthdays); 
+
+      return interaction.reply({ content: `Birthday for <@${user.id}> set to ${date}.` });
+    } catch (error) {
+      console.error('Error saving birthday:', error);
+      return interaction.reply({ content: 'Failed to save birthday.', flags: 64 });
+    }
+  } 
+  else if (commandName === 'editbirthday') {
+    const user = interaction.options.getUser('user') || interaction.user;
+    const date = interaction.options.getString('date');
+
+    if (!isValidDate(date)) {
+      return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
+    }
+
+    try {
+      // Fetch existing data from JSONBin
+      const birthdays = await fetchData(); 
+
+      if (!birthdays[user.id]) {
+        return interaction.reply({ content: `No existing birthday for <@${user.id}>. Use /setbirthday first.`, flags: 64 });
+      }
+
+      // Update the birthday for the user
+      birthdays[user.id] = date; 
+
+      // Update the data to JSONBin
+      await updateData(birthdays); 
+
+      return interaction.reply({ content: `Birthday for <@${user.id}> updated to ${date}.` });
+    } catch (error) {
+      console.error('Error updating birthday:', error);
+      return interaction.reply({ content: 'Failed to update birthday.', flags: 64 });
+    }
+  }
+}
+
+// You should have this function within the Discord bot client setup to handle the commands.
+
     else if (commandName === 'allbirthdays') {
         if (Object.keys(birthdays).length === 0) {
             return interaction.reply('No birthdays have been set yet.');
