@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
 
 app.get('/', (req, res) => {
   res.send('Bot is running!');
@@ -156,7 +157,6 @@ client.on('interactionCreate', async interaction => {
  const { SlashCommandBuilder } = require('@discordjs/builders');
 
 // Your JSONBin URL and API key
-const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
 const BIN_API_KEY = 'your-jsonbin-api-key'; // Replace with your X-Master-Key
 
 // Fetch data from JSONBin
