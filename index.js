@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require('discord.js'); 
 const express = require('express');
 const app = express();
 
@@ -350,7 +351,6 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Welcome message
-const { EmbedBuilder } = require('discord.js'); // make sure this is at the top
 const MOD_ROLE_ID = '1235976846718402560'; // define the Mod role ID
 
 // Rules command
