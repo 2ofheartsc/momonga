@@ -349,9 +349,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// Welcome message
-const MOD_ROLE_ID = '1235976846718402560'; // define the Mod role ID
-
 // Rules command
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
