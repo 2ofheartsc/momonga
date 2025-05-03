@@ -405,22 +405,22 @@ client.login(process.env.token);
 // birthday stuff
 const axios = require('axios');
 
-// Your JSONBin URL and API key
-const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679'; // Replace with your bin ID
-const BIN_API_KEY = '$2a$10$seHsydMif4P1GhKxtOmUg.GxR6q1kZBbnQGiD12olEu0c.Rvoi2wW'; // Replace with your API key
+// Your JSONBin URL and X-Master-Key
+const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
+const BIN_API_KEY = '$2a$10$.PjJs7c4DYVfgejgvxfUb.PFw5ACT8mja/ZGjSooAUD2lvCLHJCxi';
 
 // Fetch data from JSONBin
 async function fetchData() {
   try {
     const response = await axios.get(BIN_URL, {
       headers: {
-        '$2a$10$.PjJs7c4DYVfgejgvxfUb.PFw5ACT8mja/ZGjSooAUD2lvCLHJCxi': BIN_API_KEY, // Use 'X-Master-Key' for write access
-      },
+        'X-Master-Key': BIN_API_KEY
+      }
     });
-    const data = response.data.record; // The JSON data from your bin
+    const data = response.data.record;
     console.log('Fetched data:', data);
   } catch (error) {
-    console.error('Error fetching data:', error.response ? error.response.data : error.message);
+    console.error('Error fetching data:', error.response?.data || error.message);
   }
 }
 
@@ -429,24 +429,25 @@ async function updateData(newData) {
   try {
     const response = await axios.put(
       BIN_URL,
-      {
-        record: newData, // Update the bin with new data
-      },
+      { record: newData },
       {
         headers: {
-          'X-Master-Key': BIN_API_KEY, // Use 'X-Master-Key' for write access
-        },
+          'X-Master-Key': BIN_API_KEY,
+          'Content-Type': 'application/json'
+        }
       }
     );
     console.log('JSONBin updated:', response.data);
   } catch (error) {
-    console.error('Error updating data:', error.response ? error.response.data : error.message);
+    console.error('Error updating data:', error.response?.data || error.message);
   }
 }
 
-// Call the functions
+// Example usage
 fetchData();
 
-// Example data to update
-const newBirthdayData = { "newBirthday": "2025-05-03" };
+const newBirthdayData = {
+  "user1": "2005-09-10",
+  "user2": "2004-12-25"
+};
 updateData(newBirthdayData);
