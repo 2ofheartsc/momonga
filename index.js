@@ -186,30 +186,6 @@ client.on('interactionCreate', async interaction => {
         const embed = new EmbedBuilder()
             .setTitle('All Birthdays')
             .setColor(0x00AE86);
-        for (const [userId, birthday] of Object.entries(birthdays)) {
-            embed.addFields({ name: `<@${userId}>`, value: birthday, inline: true });
-        }
-        return interaction.reply({ embeds: [embed] });
-    }
-    else if (commandName === 'deletecommands') {
-        const commandToDelete = interaction.options.getString('command');
-        const commands = await client.application.commands.fetch();
-        const command = commands.find(cmd => cmd.name === commandToDelete);
-        
-        if (!command) {
-            return interaction.reply({ content: `Command "${commandToDelete}" not found.`, ephemeral: true });
-        }
-
-        await client.application.commands.delete(command.id);
-        return interaction.reply({ content: `Command "${commandToDelete}" has been deleted.`, ephemeral: true });
-    }
-    else if (commandName === 'allbirthdays') {
-        if (Object.keys(birthdays).length === 0) {
-            return interaction.reply('No birthdays have been set yet.');
-        }
-        const embed = new EmbedBuilder()
-            .setTitle('All Birthdays')
-            .setColor(0x00AE86);
             
         for (const [userId, birthday] of Object.entries(birthdays)) {
             const member = await interaction.guild.members.fetch(userId);
