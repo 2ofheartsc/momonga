@@ -401,3 +401,52 @@ client.on('guildMemberRemove', member => {
 // Login to Discord
 console.log("TOKEN:", process.env.TOKEN);
 client.login(process.env.token);
+
+// birthday stuff
+const axios = require('axios');
+
+// Your JSONBin URL and API key
+const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679'; // Replace with your bin ID
+const BIN_API_KEY = '$2a$10$seHsydMif4P1GhKxtOmUg.GxR6q1kZBbnQGiD12olEu0c.Rvoi2wW'; // Replace with your API key
+
+// Fetch data from JSONBin
+async function fetchData() {
+  try {
+    const response = await axios.get(BIN_URL, {
+      headers: {
+        'X-Master-Key': BIN_API_KEY, // Use 'X-Master-Key' for write access
+      },
+    });
+    const data = response.data.record; // The JSON data from your bin
+    console.log('Fetched data:', data);
+  } catch (error) {
+    console.error('Error fetching data:', error.response ? error.response.data : error.message);
+  }
+}
+
+// Update data to JSONBin
+async function updateData(newData) {
+  try {
+    const response = await axios.put(
+      BIN_URL,
+      {
+        record: newData, // Update the bin with new data
+      },
+      {
+        headers: {
+          'X-Master-Key': BIN_API_KEY, // Use 'X-Master-Key' for write access
+        },
+      }
+    );
+    console.log('JSONBin updated:', response.data);
+  } catch (error) {
+    console.error('Error updating data:', error.response ? error.response.data : error.message);
+  }
+}
+
+// Call the functions
+fetchData();
+
+// Example data to update
+const newBirthdayData = { "newBirthday": "2025-05-03" };
+updateData(newBirthdayData);
