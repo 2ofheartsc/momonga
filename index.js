@@ -154,7 +154,6 @@ client.on('interactionCreate', async interaction => {
     const { commandName } = interaction;
 
  const { SlashCommandBuilder } = require('@discordjs/builders');
-const axios = require('axios');
 
 // Your JSONBin URL and API key
 const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
