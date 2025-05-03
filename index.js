@@ -504,9 +504,6 @@ client.login(process.env.token);
 // birthday stuff
 const axios = require('axios');
 
-// Your JSONBin URL and X-Master-Key
-const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
-const BIN_API_KEY = '$2a$10$.PjJs7c4DYVfgejgvxfUb.PFw5ACT8mja/ZGjSooAUD2lvCLHJCxi';
 
 // Fetch data from JSONBin
 async function fetchData() {
