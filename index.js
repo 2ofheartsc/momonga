@@ -350,24 +350,32 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Welcome message
+const { EmbedBuilder } = require('discord.js'); // make sure this is at the top
+const MOD_ROLE_ID = '1235976846718402560'; // define the Mod role ID
+
 // Rules command
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
-    
+
     if (message.content === '!rules') {
+        // Check if the user has the Mod role
+        if (!message.member.roles.cache.has(MOD_ROLE_ID)) {
+            return message.reply('You do not have permission to use this command.');
+        }
+
         const rulesEmbed = new EmbedBuilder()
             .setTitle('Server Rules')
             .setColor(0xffffff)
             .setDescription('Please follow these rules to maintain a friendly environment:')
             .addFields(
                 { name: '1. Be Respectful', value: 'Treat all members with respect and kindness.' },
-                { name: '2. No Slurs', value: ' No discrimination, slurs or hate speech.' },
+                { name: '2. No Slurs', value: 'No discrimination, slurs or hate speech.' },
                 { name: '3. No NSFW Content', value: 'Keep all content family-friendly, this includes gore.' },
                 { name: '4. Use Appropriate Channels', value: 'Post content in relevant channels.' },
                 { name: '5. No Insensitive Jokes', value: 'No rape, touching, or etc. jokes.' }
             )
-            .setImage('https://i.ibb.co/ccPgdM2K/2025-05-02-0qy-Kleki-1.png') // Replace with your image URL
-            
+            .setImage('https://i.ibb.co/ccPgdM2K/2025-05-02-0qy-Kleki-1.png');
+
         message.channel.send({ embeds: [rulesEmbed] });
     }
 });
