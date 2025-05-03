@@ -1,13 +1,12 @@
-const express = require('express'); // Only declare once
-const app = express(); // Only declare once
+const express = require('express');
+const app = express();
 
 app.get('/', (req, res) => {
   res.send('Bot is running!');
 });
 
-// Your other routes or setup can go here...
-
-const port = process.env.PORT || 3000;
+// Use the port from the environment variable, or default to 10000 if not set
+const port = process.env.PORT || 10000;
 
 app.listen(port, () => {
   console.log(`Express server started on port ${port}`);
