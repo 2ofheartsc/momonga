@@ -151,7 +151,7 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
     if (!interaction.member.roles.cache.has(MOD_ROLE_ID)) {
-        return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+        return interaction.reply({ content: 'You do not have permission to use this command.', flags: 64 });
     }
 
     const { commandName } = interaction;
@@ -160,7 +160,7 @@ client.on('interactionCreate', async interaction => {
         const user = interaction.options.getUser('user') || interaction.user;
         const date = interaction.options.getString('date');
         if (!isValidDate(date)) {
-            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', ephemeral: true });
+            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
         }
         birthdays[user.id] = date;
         saveBirthdays();
@@ -170,10 +170,10 @@ client.on('interactionCreate', async interaction => {
         const user = interaction.options.getUser('user') || interaction.user;
         const date = interaction.options.getString('date');
         if (!isValidDate(date)) {
-            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', ephemeral: true });
+            return interaction.reply({ content: 'Invalid date format. Please use MM/DD.', flags: 64 });
         }
         if (!birthdays[user.id]) {
-            return interaction.reply({ content: `No existing birthday for <@${user.id}>. Use /setbirthday first.`, ephemeral: true });
+            return interaction.reply({ content: `No existing birthday for <@${user.id}>. Use /setbirthday first.`, flags: 64 });
         }
         birthdays[user.id] = date;
         saveBirthdays();
@@ -329,23 +329,23 @@ client.on('interactionCreate', async interaction => {
     try {
         if (customId === 'pronouns_select') {
             await handleRoleUpdate(pronounRoles, values[0]);
-            return interaction.reply({ content: 'Pronoun role updated.', ephemeral: true });
+            return interaction.reply({ content: 'Pronoun role updated.', flags: 64 });
         } 
         else if (customId === 'age_select') {
             await handleRoleUpdate(ageRoles, values[0]);
-            return interaction.reply({ content: 'Age role updated.', ephemeral: true });
+            return interaction.reply({ content: 'Age role updated.', flags: 64 });
         }
         else if (customId === 'pings_select') {
             await handleRoleUpdate(pingRoles, values[0]);
-            return interaction.reply({ content: 'Ping role updated.', ephemeral: true });
+            return interaction.reply({ content: 'Ping role updated.', flags: 64 });
         }
         else if (customId === 'dm_select') {
             await handleRoleUpdate(dmRoles, values[0]);
-            return interaction.reply({ content: 'DM preference updated.', ephemeral: true });
+            return interaction.reply({ content: 'DM preference updated.', flags: 64 });
         }
     } catch (error) {
         console.error('Error updating roles:', error);
-        return interaction.reply({ content: 'There was an error updating your roles.', ephemeral: true });
+        return interaction.reply({ content: 'There was an error updating your roles.', flags: 64 });
     }
 });
 
