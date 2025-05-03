@@ -1,3 +1,14 @@
+client.on('error', (error) => {
+    console.error('Discord client error:', error);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+});
+
 const express = require('express');
 const app = express();
 const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
