@@ -276,11 +276,7 @@ async function executeCommand(interaction) {
       return interaction.reply({ content: 'Failed to update birthday.', flags: 64 });
     }
   }
-}
-
-// You should have this function within the Discord bot client setup to handle the commands.
-
-     if (commandName === 'allbirthdays') {
+     else if (commandName === 'allbirthdays') {
         if (Object.keys(birthdays).length === 0) {
             return interaction.reply('No birthdays have been set yet.');
         }
