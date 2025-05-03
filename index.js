@@ -99,13 +99,6 @@ const commands = [
         .setName('allbirthdays')
         .setDescription('List all stored birthdays.'),
     new SlashCommandBuilder()
-        .setName('deletecommands')
-        .setDescription('Delete a specific slash command')
-        .addStringOption(option =>
-            option.setName('command')
-                .setDescription('Command name to delete')
-                .setRequired(true)),
-    new SlashCommandBuilder()
         .setName('roles')
         .setDescription('Get role assignment menus for Pronouns, Age, Pings, and DM status.')
 ].map(command => command.toJSON());
@@ -152,15 +145,6 @@ client.on('interactionCreate', async interaction => {
 
     const { commandName } = interaction;  // You need to define commandName here
 
-    const restrictedCommands = ['roles', 'deletecommands'];
-
-    if (restrictedCommands.includes(commandName) && !interaction.member.roles.cache.has(MOD_ROLE_ID)) {
-        return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
-    }
-
-    // Your command handling logic goes here
-});
-
     const { commandName } = interaction;
 
     if (commandName === 'setbirthday') {
@@ -198,18 +182,7 @@ client.on('interactionCreate', async interaction => {
         }
         return interaction.reply({ embeds: [embed] });
     }
-    else if (commandName === 'deletecommands') {
-        const commandToDelete = interaction.options.getString('command');
-        const commands = await client.application.commands.fetch();
-        const command = commands.find(cmd => cmd.name === commandToDelete);
-        
-        if (!command) {
-            return interaction.reply({ content: `Command "${commandToDelete}" not found.`, ephemeral: true });
-        }
 
-        await client.application.commands.delete(command.id);
-        return interaction.reply({ content: `Command "${commandToDelete}" has been deleted.`, ephemeral: true });
-    }
     else if (commandName === 'allbirthdays') {
         if (Object.keys(birthdays).length === 0) {
             return interaction.reply('No birthdays have been set yet.');
