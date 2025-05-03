@@ -104,10 +104,7 @@ const commands = [
         .addStringOption(option =>
             option.setName('command')
                 .setDescription('Command name to delete')
-                .setRequired(true)),
-    new SlashCommandBuilder()
-        .setName('roles')
-        .setDescription('Get role assignment menus for Pronouns, Age, Pings, and DM status.')
+                .setRequired(true))
 ].map(command => command.toJSON());
 
 // When bot is ready
