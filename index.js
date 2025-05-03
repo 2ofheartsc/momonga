@@ -414,7 +414,7 @@ async function fetchData() {
   try {
     const response = await axios.get(BIN_URL, {
       headers: {
-        'X-Master-Key': BIN_API_KEY, // Use 'X-Master-Key' for write access
+        '$2a$10$.PjJs7c4DYVfgejgvxfUb.PFw5ACT8mja/ZGjSooAUD2lvCLHJCxi': BIN_API_KEY, // Use 'X-Master-Key' for write access
       },
     });
     const data = response.data.record; // The JSON data from your bin
