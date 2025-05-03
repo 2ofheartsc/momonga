@@ -1,4 +1,3 @@
-const { EmbedBuilder } = require('discord.js'); 
 const express = require('express');
 const app = express();
 
