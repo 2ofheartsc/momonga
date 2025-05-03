@@ -280,7 +280,7 @@ async function executeCommand(interaction) {
 
 // You should have this function within the Discord bot client setup to handle the commands.
 
-    else if (commandName === 'allbirthdays') {
+     if (commandName === 'allbirthdays') {
         if (Object.keys(birthdays).length === 0) {
             return interaction.reply('No birthdays have been set yet.');
         }
