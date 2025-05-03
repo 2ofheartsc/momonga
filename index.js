@@ -1,21 +1,16 @@
-const express = require('express');
-const app = express();
+const express = require('express'); // Only declare once
+const app = express(); // Only declare once
 
 app.get('/', (req, res) => {
   res.send('Bot is running!');
 });
 
-const express = require('express');
-const app = express();
+// Your other routes or setup can go here...
 
-// Your other setup and routes here...
-
-// Use the port from the environment variable, or default to 3000 if not set
 const port = process.env.PORT || 3000;
 
-// Start the server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Express server started on port ${port}`);
 });
 
 // Import necessary classes from discord.js
