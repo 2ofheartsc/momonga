@@ -290,7 +290,7 @@ async function executeCommand(interaction) {
         }
         return interaction.reply({ embeds: [embed] });
     }
-}; 
+} 
 
         // Pronouns menu
         const pronounSelect = new StringSelectMenuBuilder()
@@ -357,7 +357,7 @@ async function executeCommand(interaction) {
         await message.channel.send({ embeds: [pingEmbed], components: [pingRow] });
         await message.channel.send({ embeds: [dmEmbed], components: [dmRow] });
     }
-});
+);
 
 // Handle role selections
 client.on('interactionCreate', async interaction => {
@@ -522,4 +522,3 @@ const newBirthdayData = {
 };
 updateData(newBirthdayData);
 updateData({});
-
