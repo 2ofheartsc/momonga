@@ -292,32 +292,6 @@ async function executeCommand(interaction) {
     }
 }; 
 
-// Message command handler
-client.on('messageCreate', async message => {
-    if (message.author.bot) return;
-
-    if (message.content === '!roles') {
-        const pronounRoles = {
-            'she/her': '1243103055956803645',
-            'he/him': '1243103190258286624',
-            'they/them': '1243103426070446091',
-            'other': '1243103632493117522'
-        };
-        const ageRoles = {
-            '-17': '1243117148449275915',
-            '18+': '1243117205516849173'
-        };
-        const pingRoles = {
-            'shame': '1243179816115638302',
-            'announcements': '1243683983733297182',
-            'games': '1243683801369018368'
-        };
-        const dmRoles = {
-            'ask': '1243683324128395297',
-            'open': '1243683467762470984',
-            'closed': '1243683499748233238'
-        };
-
         // Pronouns menu
         const pronounSelect = new StringSelectMenuBuilder()
             .setCustomId('pronouns_select')
