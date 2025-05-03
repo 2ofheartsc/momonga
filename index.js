@@ -291,7 +291,7 @@ async function executeCommand(interaction) {
         }
         return interaction.reply({ embeds: [embed] });
     }
-}); 
+}; 
 
 // Message command handler
 client.on('messageCreate', async message => {
