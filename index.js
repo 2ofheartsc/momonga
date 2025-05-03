@@ -451,3 +451,5 @@ const newBirthdayData = {
   "user2": "2004-12-25"
 };
 updateData(newBirthdayData);
+updateData({});
+
