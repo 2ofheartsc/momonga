@@ -543,6 +543,7 @@ const colorRoles = [
 
 client.on('messageCreate', async (message) => {
     if (message.content === '!color') {
+        console.log("Received !color command");
         // Create the embed
         const embed = new MessageEmbed()
             .setColor('#0099ff')
