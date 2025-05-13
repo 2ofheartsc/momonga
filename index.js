@@ -532,75 +532,97 @@ const newBirthdayData = {
 };
 updateData(newBirthdayData);
 updateData({});
-/ / 
+ 
+
+// Color role data
 const colorRoles = [
-  { name: 'Red', color: '#FF0000', roleId: 'ROLE_ID_1' },
-  { name: 'Orange', color: '#FFA500', roleId: 'ROLE_ID_2' },
-  { name: 'Yellow', color: '#FFFF00', roleId: 'ROLE_ID_3' },
-  { name: 'Green', color: '#00FF00', roleId: 'ROLE_ID_4' },
-  { name: 'Blue', color: '#0000FF', roleId: 'ROLE_ID_5' },
+  { name: 'Red', id: 'ROLE_ID_RED', hex: '#ff0000' },
+  { name: 'Orange', id: 'ROLE_ID_ORANGE', hex: '#ffa500' },
+  { name: 'Yellow', id: 'ROLE_ID_YELLOW', hex: '#ffff00' },
+  { name: 'Green', id: 'ROLE_ID_GREEN', hex: '#00ff00' },
+  { name: 'Blue', id: 'ROLE_ID_BLUE', hex: '#0000ff' },
+  { name: 'Purple', id: 'ROLE_ID_PURPLE', hex: '#800080' }
 ];
 
 module.exports = {
   name: 'colorroles',
-  description: 'Pick a color role using buttons!',
+  description: 'Send a menu for selecting color roles',
   async execute(message, args, client) {
     const embed = new EmbedBuilder()
-      .setTitle('🎨 Choose Your Color Role')
+      .setTitle('🎨 Pick Your Color Role')
       .setDescription(
         colorRoles
-          .map((r, i) => `**${i + 1}.** \`${r.name}\``)
+          .map((role, i) => `**${i + 1}.** \`\`\`${role.name}\`\`\``)
           .join('\n')
       )
-      .setFooter({ text: 'Click a button below to choose your color!' });
+      .setColor('#ffffff');
 
-    // Add colored fields to visually show each color
-    colorRoles.forEach(role => {
+    // Apply colors directly to each text
+    for (let i = 0; i < colorRoles.length; i++) {
       embed.addFields({
-        name: '\u200B',
-        value: `\u200B`,
-        inline: false,
+        name: `\u200B`,
+        value: `**${i + 1}.** ${colorRoles[i].name}`,
+        inline: true
       });
-    });
+    }
 
-    embed.setColor('#2f3136'); // Default neutral embed color
-
-    const row = new ActionRowBuilder().addComponents(
-      colorRoles.map((r, i) =>
+    // Create buttons
+    const buttons = new ActionRowBuilder().addComponents(
+      colorRoles.map((_, i) =>
         new ButtonBuilder()
-          .setCustomId(`colorrole_${i}`)
+          .setCustomId(`color_${i}`)
           .setLabel(`${i + 1}`)
           .setStyle(ButtonStyle.Primary)
       )
     );
 
-    const sent = await message.channel.send({ embeds: [embed], components: [row] });
+    const msg = await message.channel.send({
+      embeds: [embed],
+      components: [buttons]
+    });
 
-    const filter = i => i.user.id === message.author.id;
-    const collector = sent.createMessageComponentCollector({ time: 60000 });
+    // Button interaction collector
+    const collector = msg.createMessageComponentCollector({
+      time: 60000,
+      componentType: 2 // Button
+    });
 
-    collector.on('collect', async interaction => {
+    collector.on('collect', async (interaction) => {
+      if (interaction.user.id !== message.author.id) {
+        return interaction.reply({
+          content: 'Only the command user can select a role.',
+          ephemeral: true
+        });
+      }
+
       const index = parseInt(interaction.customId.split('_')[1]);
-      const chosenRole = colorRoles[index];
+      const selectedRole = colorRoles[index];
 
       const member = interaction.member;
 
       // Remove all other color roles
-      const roleIds = colorRoles.map(r => r.roleId);
-      const rolesToRemove = member.roles.cache.filter(role => roleIds.includes(role.id));
-      await member.roles.remove(rolesToRemove);
+      const rolesToRemove = colorRoles
+        .filter(r => member.roles.cache.has(r.id))
+        .map(r => r.id);
 
-      // Add the chosen role
-      await member.roles.add(chosenRole.roleId);
-
-      await interaction.reply({
-        content: `✅ You have been given the **${chosenRole.name}** role.`,
-        ephemeral: true,
-      });
+      try {
+        await member.roles.remove(rolesToRemove);
+        await member.roles.add(selectedRole.id);
+        await interaction.reply({
+          content: `You now have the **${selectedRole.name}** role!`,
+          ephemeral: true
+        });
+      } catch (err) {
+        console.error(err);
+        await interaction.reply({
+          content: 'I couldn’t update your role. Make sure my role is above the color roles!',
+          ephemeral: true
+        });
+      }
     });
 
     collector.on('end', () => {
-      sent.edit({ components: [] });
+      msg.edit({ components: [] });
     });
-  },
+  }
 };
