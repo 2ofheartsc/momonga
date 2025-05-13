@@ -533,7 +533,7 @@ const newBirthdayData = {
 updateData(newBirthdayData);
 updateData({});
 
-# Color roles dictionary
+// Colorrolesdictionary
 color_roles = {
     "Red": {"id": 111111111111111111, "hex": 0xFF0000},
     "Green": {"id": 222222222222222222, "hex": 0x00FF00},
