@@ -485,9 +485,9 @@ client.on('guildMemberRemove', member => {
 console.log("TOKEN:", process.env.TOKEN);
 client.login(process.env.token);
 
-// birthday stuff
-const axios = require('axios');
+//
 
+const axios = require('axios');
 
 // Fetch data from JSONBin
 async function fetchData() {
@@ -499,6 +499,7 @@ async function fetchData() {
     });
     const data = response.data.record;
     console.log('Fetched data:', data);
+    return data; // Return the fetched data
   } catch (error) {
     console.error('Error fetching data:', error.response?.data || error.message);
   }
@@ -507,28 +508,39 @@ async function fetchData() {
 // Update data to JSONBin
 async function updateData(newData) {
   try {
-    const response = await axios.put(
-      BIN_URL,
-      { record: newData },
-      {
-        headers: {
-          'X-Master-Key': BIN_API_KEY,
-          'Content-Type': 'application/json'
+    // First, fetch the current data to preserve other entries
+    const currentData = await fetchData();
+
+    if (currentData) {
+      // Merge the current data with the new data
+      const updatedData = { ...currentData, ...newData };
+
+      // Update the JSONBin with the merged data
+      const response = await axios.put(
+        BIN_URL,
+        { record: updatedData },
+        {
+          headers: {
+            'X-Master-Key': BIN_API_KEY,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    console.log('JSONBin updated:', response.data);
+      );
+      console.log('JSONBin updated:', response.data);
+    } else {
+      console.error('Failed to fetch current data, not updating.');
+    }
   } catch (error) {
     console.error('Error updating data:', error.response?.data || error.message);
   }
 }
 
-// Example usage
-fetchData();
-
+// Example usage to update birthday data
 const newBirthdayData = {
   "user1": "2005-09-10",
   "user2": "2004-12-25"
 };
 updateData(newBirthdayData);
+
+// If you need to clear the data, you can call updateData({}) as you did
 updateData({});
