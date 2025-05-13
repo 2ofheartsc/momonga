@@ -534,103 +534,56 @@ updateData(newBirthdayData);
 updateData({});
  
 
-// The main command part for !colorroles
+const colorRoles = [
+    { name: 'Red', roleId: 'ROLE_ID_1' },
+    { name: 'Blue', roleId: 'ROLE_ID_2' },
+    { name: 'Green', roleId: 'ROLE_ID_3' },
+    // Add more colors as needed
+];
+
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return; // Ignore bot messages
+    if (message.content === '!color') {
+        // Create the embed
+        const embed = new MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('Select Your Color Role')
+            .setDescription('Click a button below to select your preferred color role!')
+            .setFooter('React with a color role below.');
 
-  // Check for the '!colorroles' command
-  if (message.content === '!colorroles') {
-    // Check if the user has the Mod role (you can adjust or remove this check)
-    if (!message.member.roles.cache.has('MOD_ROLE_ID')) { // Replace with your actual MOD_ROLE_ID
-      return message.reply('You do not have permission to use this command.');
+        // Create buttons
+        const row = new MessageActionRow();
+
+        colorRoles.forEach((color) => {
+            row.addComponents(
+                new MessageButton()
+                    .setCustomId(color.roleId)
+                    .setLabel(color.name)
+                    .setStyle('PRIMARY')
+            );
+        });
+
+        // Send the embed with buttons
+        await message.channel.send({ embeds: [embed], components: [row] });
     }
+});
 
-    // Define color roles here (add actual role IDs)
-    const colorRoles = [
-      { name: 'Red', id: 'role_id_1' }, // Replace with actual role IDs
-      { name: 'Green', id: 'role_id_2' },
-      { name: 'Blue', id: 'role_id_3' },
-      // Add more roles as needed
-    ];
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isButton()) return;
 
-    // Create the embed with available roles
-    const embed = new EmbedBuilder()
-      .setTitle('🎨 Pick Your Color Role')
-      .setDescription(
-        colorRoles
-          .map((role, i) => `**${i + 1}.** \`\`\`${role.name}\`\`\``)
-          .join('\n')
-      )
-      .setColor('#ffffff');
+    const { customId } = interaction;
 
-    // Create buttons for each role
-    const buttons = new ActionRowBuilder().addComponents(
-      colorRoles.map((_, i) =>
-        new ButtonBuilder()
-          .setCustomId(`color_${i}`)
-          .setLabel(`${i + 1}`)
-          .setStyle(ButtonStyle.Primary)
-      )
-    );
+    // Find the role associated with the button pressed
+    const colorRole = colorRoles.find((role) => role.roleId === customId);
 
-    // Send the embed with buttons
-    const msg = await message.channel.send({
-      embeds: [embed],
-      components: [buttons],
-    });
+    if (!colorRole) return;
 
-    // Collector to handle button interactions
-    const collector = msg.createMessageComponentCollector({
-      time: 60000, // 1 minute timeout
-      componentType: 2, // Button type
-    });
+    const member = interaction.guild.members.cache.get(interaction.user.id);
 
-    collector.on('collect', async (interaction) => {
-      if (interaction.user.id !== message.author.id) {
-        return interaction.reply({
-          content: 'Only the user who ran the command can select a role!',
-          ephemeral: true,
-        });
-      }
-
-      // Extract the index from the button click
-      const index = parseInt(interaction.customId.split('_')[1]);
-      const selectedRole = colorRoles[index];
-
-      // Get the member who clicked the button
-      const member = interaction.guild.members.cache.get(interaction.user.id);
-
-      if (!member) {
-        return interaction.reply({ content: 'I couldn\'t find your member information!', ephemeral: true });
-      }
-
-      try {
-        // Remove all color roles from the user
-        const rolesToRemove = colorRoles
-          .filter((role) => member.roles.cache.has(role.id))
-          .map((role) => role.id);
-        await member.roles.remove(rolesToRemove);
-
-        // Add the selected role
-        await member.roles.add(selectedRole.id);
-
-        // Confirm role change
-        await interaction.reply({
-          content: `You now have the **${selectedRole.name}** role!`,
-          ephemeral: true,
-        });
-      } catch (err) {
-        console.error(err);
-        await interaction.reply({
-          content: 'Something went wrong. Please check my role permissions.',
-          ephemeral: true,
-        });
-      }
-    });
-
-    // Disable buttons after the collector ends
-    collector.on('end', () => {
-      msg.edit({ components: [] });
-    });
-  }
+    // Check if the member already has the color role
+    if (member.roles.cache.has(colorRole.roleId)) {
+        await interaction.reply({ content: `You already have the ${colorRole.name} role.`, ephemeral: true });
+    } else {
+        await member.roles.add(colorRole.roleId);
+        await interaction.reply({ content: `You have been given the ${colorRole.name} role!`, ephemeral: true });
+    }
 });
