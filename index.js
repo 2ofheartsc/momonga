@@ -532,55 +532,75 @@ const newBirthdayData = {
 };
 updateData(newBirthdayData);
 updateData({});
+/ / 
+const colorRoles = [
+  { name: 'Red', color: '#FF0000', roleId: 'ROLE_ID_1' },
+  { name: 'Orange', color: '#FFA500', roleId: 'ROLE_ID_2' },
+  { name: 'Yellow', color: '#FFFF00', roleId: 'ROLE_ID_3' },
+  { name: 'Green', color: '#00FF00', roleId: 'ROLE_ID_4' },
+  { name: 'Blue', color: '#0000FF', roleId: 'ROLE_ID_5' },
+];
 
-// Colorrolesdictionary
-color_roles = {
-    "Red": {"id": 111111111111111111, "hex": 0xFF0000},
-    "Green": {"id": 222222222222222222, "hex": 0x00FF00},
-    "Blue": {"id": 333333333333333333, "hex": 0x0000FF},
-    "Yellow": {"id": 444444444444444444, "hex": 0xFFFF00},
-    "Purple": {"id": 555555555555555555, "hex": 0x800080},
-}
+module.exports = {
+  name: 'colorroles',
+  description: 'Pick a color role using buttons!',
+  async execute(message, args, client) {
+    const embed = new EmbedBuilder()
+      .setTitle('🎨 Choose Your Color Role')
+      .setDescription(
+        colorRoles
+          .map((r, i) => `**${i + 1}.** \`${r.name}\``)
+          .join('\n')
+      )
+      .setFooter({ text: 'Click a button below to choose your color!' });
 
-class ColorRoleButtons(View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        for i, (name, info) in enumerate(color_roles.items(), start=1):
-            self.add_item(ColorRoleButton(label=str(i), role_name=name))
+    // Add colored fields to visually show each color
+    colorRoles.forEach(role => {
+      embed.addFields({
+        name: '\u200B',
+        value: `\u200B`,
+        inline: false,
+      });
+    });
 
-class ColorRoleButton(Button):
-    def __init__(self, label, role_name):
-        super().__init__(style=discord.ButtonStyle.primary, label=label)
-        self.role_name = role_name
+    embed.setColor('#2f3136'); // Default neutral embed color
 
-    async def callback(self, interaction: discord.Interaction):
-        role_id = color_roles[self.role_name]["id"]
-        role = interaction.guild.get_role(role_id)
+    const row = new ActionRowBuilder().addComponents(
+      colorRoles.map((r, i) =>
+        new ButtonBuilder()
+          .setCustomId(`colorrole_${i}`)
+          .setLabel(`${i + 1}`)
+          .setStyle(ButtonStyle.Primary)
+      )
+    );
 
-        if not role:
-            await interaction.response.send_message(f"Role `{self.role_name}` not found.", ephemeral=True)
-            return
+    const sent = await message.channel.send({ embeds: [embed], components: [row] });
 
-        if role in interaction.user.roles:
-            await interaction.user.remove_roles(role)
-            await interaction.response.send_message(f"Removed `{self.role_name}` role.", ephemeral=True)
-        else:
-            # Remove other color roles first
-            color_role_ids = [r["id"] for r in color_roles.values()]
-            to_remove = [r for r in interaction.user.roles if r.id in color_role_ids]
-            await interaction.user.remove_roles(*to_remove)
+    const filter = i => i.user.id === message.author.id;
+    const collector = sent.createMessageComponentCollector({ time: 60000 });
 
-            await interaction.user.add_roles(role)
-            await interaction.response.send_message(f"Assigned `{self.role_name}` role!", ephemeral=True)
+    collector.on('collect', async interaction => {
+      const index = parseInt(interaction.customId.split('_')[1]);
+      const chosenRole = colorRoles[index];
 
-@bot.command()
-async def colorroles(ctx):
-    embed = discord.Embed(title="Pick a Color Role!", description="", color=discord.Color.blurple())
-    
-    # Create text where color name matches the color
-    for i, (name, info) in enumerate(color_roles.items(), start=1):
-        embed.add_field(name=f"{i}. \u200B", value=f"**[{name}](https://discord.com)**", inline=True)
+      const member = interaction.member;
 
-    # Set embed color fields to match role color
-    embed.set_footer(text="Click the buttons below to choose!")
-    await ctx.send(embed=embed, view=ColorRoleButtons())
+      // Remove all other color roles
+      const roleIds = colorRoles.map(r => r.roleId);
+      const rolesToRemove = member.roles.cache.filter(role => roleIds.includes(role.id));
+      await member.roles.remove(rolesToRemove);
+
+      // Add the chosen role
+      await member.roles.add(chosenRole.roleId);
+
+      await interaction.reply({
+        content: `✅ You have been given the **${chosenRole.name}** role.`,
+        ephemeral: true,
+      });
+    });
+
+    collector.on('end', () => {
+      sent.edit({ components: [] });
+    });
+  },
+};
