@@ -532,3 +532,55 @@ const newBirthdayData = {
 };
 updateData(newBirthdayData);
 updateData({});
+
+# Color roles dictionary
+color_roles = {
+    "Red": {"id": 111111111111111111, "hex": 0xFF0000},
+    "Green": {"id": 222222222222222222, "hex": 0x00FF00},
+    "Blue": {"id": 333333333333333333, "hex": 0x0000FF},
+    "Yellow": {"id": 444444444444444444, "hex": 0xFFFF00},
+    "Purple": {"id": 555555555555555555, "hex": 0x800080},
+}
+
+class ColorRoleButtons(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        for i, (name, info) in enumerate(color_roles.items(), start=1):
+            self.add_item(ColorRoleButton(label=str(i), role_name=name))
+
+class ColorRoleButton(Button):
+    def __init__(self, label, role_name):
+        super().__init__(style=discord.ButtonStyle.primary, label=label)
+        self.role_name = role_name
+
+    async def callback(self, interaction: discord.Interaction):
+        role_id = color_roles[self.role_name]["id"]
+        role = interaction.guild.get_role(role_id)
+
+        if not role:
+            await interaction.response.send_message(f"Role `{self.role_name}` not found.", ephemeral=True)
+            return
+
+        if role in interaction.user.roles:
+            await interaction.user.remove_roles(role)
+            await interaction.response.send_message(f"Removed `{self.role_name}` role.", ephemeral=True)
+        else:
+            # Remove other color roles first
+            color_role_ids = [r["id"] for r in color_roles.values()]
+            to_remove = [r for r in interaction.user.roles if r.id in color_role_ids]
+            await interaction.user.remove_roles(*to_remove)
+
+            await interaction.user.add_roles(role)
+            await interaction.response.send_message(f"Assigned `{self.role_name}` role!", ephemeral=True)
+
+@bot.command()
+async def colorroles(ctx):
+    embed = discord.Embed(title="Pick a Color Role!", description="", color=discord.Color.blurple())
+    
+    # Create text where color name matches the color
+    for i, (name, info) in enumerate(color_roles.items(), start=1):
+        embed.add_field(name=f"{i}. \u200B", value=f"**[{name}](https://discord.com)**", inline=True)
+
+    # Set embed color fields to match role color
+    embed.set_footer(text="Click the buttons below to choose!")
+    await ctx.send(embed=embed, view=ColorRoleButtons())
