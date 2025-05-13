@@ -534,21 +534,26 @@ updateData(newBirthdayData);
 updateData({});
  
 
-// Color role data
+// The main command part for !colorroles
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
+  if (message.author.bot) return; // Ignore bot messages
 
-  // Command for !colorroles
+  // Check for the '!colorroles' command
   if (message.content === '!colorroles') {
-    // Array of color roles (customize the role names and IDs as needed)
+    // Check if the user has the Mod role (you can adjust or remove this check)
+    if (!message.member.roles.cache.has('MOD_ROLE_ID')) { // Replace with your actual MOD_ROLE_ID
+      return message.reply('You do not have permission to use this command.');
+    }
+
+    // Define color roles here (add actual role IDs)
     const colorRoles = [
-      { name: 'Red', id: 'role_id_1' },
+      { name: 'Red', id: 'role_id_1' }, // Replace with actual role IDs
       { name: 'Green', id: 'role_id_2' },
-      { name: 'Blue', id: 'role_id_3' }
-      // Add more colors and their role IDs here
+      { name: 'Blue', id: 'role_id_3' },
+      // Add more roles as needed
     ];
 
-    // Create the embed message
+    // Create the embed with available roles
     const embed = new EmbedBuilder()
       .setTitle('🎨 Pick Your Color Role')
       .setDescription(
@@ -558,7 +563,7 @@ client.on('messageCreate', async (message) => {
       )
       .setColor('#ffffff');
 
-    // Create buttons for each color role
+    // Create buttons for each role
     const buttons = new ActionRowBuilder().addComponents(
       colorRoles.map((_, i) =>
         new ButtonBuilder()
@@ -568,43 +573,48 @@ client.on('messageCreate', async (message) => {
       )
     );
 
-    // Send the message with buttons
+    // Send the embed with buttons
     const msg = await message.channel.send({
       embeds: [embed],
       components: [buttons],
     });
 
-    // Collector to handle button interaction
+    // Collector to handle button interactions
     const collector = msg.createMessageComponentCollector({
-      time: 60000, // Collector time (in ms)
+      time: 60000, // 1 minute timeout
       componentType: 2, // Button type
     });
 
-    // Handle button click events
     collector.on('collect', async (interaction) => {
-      // Make sure the interaction is from the message author
       if (interaction.user.id !== message.author.id) {
         return interaction.reply({
-          content: 'Only the command user can select a role.',
+          content: 'Only the user who ran the command can select a role!',
           ephemeral: true,
         });
       }
 
-      // Extract the color role index from the custom ID
+      // Extract the index from the button click
       const index = parseInt(interaction.customId.split('_')[1]);
       const selectedRole = colorRoles[index];
 
-      const member = interaction.member;
+      // Get the member who clicked the button
+      const member = interaction.guild.members.cache.get(interaction.user.id);
 
-      // Remove all color roles the user already has
-      const rolesToRemove = colorRoles
-        .filter((r) => member.roles.cache.has(r.id))
-        .map((r) => r.id);
+      if (!member) {
+        return interaction.reply({ content: 'I couldn\'t find your member information!', ephemeral: true });
+      }
 
       try {
-        // Remove the old color roles and add the new selected role
+        // Remove all color roles from the user
+        const rolesToRemove = colorRoles
+          .filter((role) => member.roles.cache.has(role.id))
+          .map((role) => role.id);
         await member.roles.remove(rolesToRemove);
+
+        // Add the selected role
         await member.roles.add(selectedRole.id);
+
+        // Confirm role change
         await interaction.reply({
           content: `You now have the **${selectedRole.name}** role!`,
           ephemeral: true,
@@ -612,15 +622,15 @@ client.on('messageCreate', async (message) => {
       } catch (err) {
         console.error(err);
         await interaction.reply({
-          content: 'I couldn’t update your role. Make sure my role is above the color roles!',
+          content: 'Something went wrong. Please check my role permissions.',
           ephemeral: true,
         });
       }
     });
 
-    // Handle the collector timeout event (after 1 minute)
+    // Disable buttons after the collector ends
     collector.on('end', () => {
-      msg.edit({ components: [] }); // Disable buttons after timeout
+      msg.edit({ components: [] });
     });
   }
 });
