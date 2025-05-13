@@ -1,3 +1,11 @@
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+});
+
 const express = require('express');
 const app = express();
 const BIN_URL = 'https://api.jsonbin.io/v3/b/681661b68960c979a592c679';
@@ -7,7 +15,9 @@ app.get('/', (req, res) => {
   res.send('Bot is running!');
 });
 
+// Use the port from the environment variable, or default to 10000 if not set
 const port = process.env.PORT || 10000;
+
 app.listen(port, () => {
   console.log(`Express server started on port ${port}`);
 });
@@ -26,17 +36,8 @@ const client = new Client({
     ]
 });
 
-// ✅ Safe to use `client` after it’s declared
 client.on('error', (error) => {
     console.error('Discord client error:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
 });
 
 // Role ID for mods (who can use commands)
